@@ -40,6 +40,10 @@ public class TestLogging
             throws IOException
     {
         tempDir = Files.createTempDir();
+        LoggingConfiguration configuration = new LoggingConfiguration();
+        configuration.setLogPath(new File(tempDir, "launcher.log").getPath());
+        Logging logging = Logging.initialize();
+        logging.configure(configuration);
     }
 
     @AfterMethod(alwaysRun = true)
@@ -53,9 +57,6 @@ public class TestLogging
     public void testRecoverTempFiles()
             throws IOException
     {
-        LoggingConfiguration configuration = new LoggingConfiguration();
-        configuration.setLogPath(new File(tempDir, "launcher.log").getPath());
-
         File logFile1 = new File(tempDir, "test1.log");
         Files.touch(logFile1);
         File logFile2 = new File(tempDir, "test2.log");
@@ -66,7 +67,6 @@ public class TestLogging
         Files.touch(tempLogFile2);
 
         Logging logging = Logging.initialize();
-        logging.configure(configuration);
 
         assertTrue(logFile1.exists());
         assertTrue(logFile2.exists());

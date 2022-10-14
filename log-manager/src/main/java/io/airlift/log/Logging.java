@@ -34,6 +34,7 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
+import static com.google.common.base.Preconditions.checkState;
 import static io.airlift.configuration.ConfigurationLoader.loadPropertiesFrom;
 import static io.airlift.configuration.ConfigurationUtils.replaceEnvironmentVariables;
 import static io.airlift.log.RollingFileMessageOutput.createRollingFileHandler;
@@ -61,6 +62,7 @@ public class Logging
 
     @GuardedBy("this")
     private OutputStreamHandler consoleHandler;
+    private boolean configured;
 
     /**
      * Sets up default logging:
@@ -200,6 +202,12 @@ public class Logging
 
     public void configure(LoggingConfiguration config)
     {
+        if (configured) {
+            log.warn("Already configured");
+            return;
+        }
+        configured = true;
+
         Map<String, String> logAnnotations = ImmutableMap.of();
         if (config.getLogAnnotationFile() != null) {
             try {
